@@ -88,7 +88,7 @@ function Coins(){
             </Header>    
             {loading? <Loading> Loading the Coin Data ... </Loading>: <CoinsList>
                 {coins.map((coin)=>(
-                    <Coin key={coin.id}> 
+                      <Coin key={coin.id}> 
                         <Link to={{
                             pathname:`/${coin.id}`,
                             //sending data to :coin screen

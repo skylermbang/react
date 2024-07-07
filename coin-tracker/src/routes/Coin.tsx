@@ -32,6 +32,88 @@ const Title = styled.h1`
     font-size: 48px;
 `;
 
+const CoinDetail= styled.div`
+    padding: 0px 20px;
+    max-width:480px;
+    margin: 0 auto;
+    
+`
+
+const Box1= styled.div`
+    padding: 20px 20px;
+    max-width:1280px;
+    font-size: 1.3rem;
+    margin: 0 auto;
+    display: flex;
+    ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    
+    };
+    li {
+      width:100px;
+      margin-right: 20px; /* Adjust as needed for spacing */
+    };
+
+    li:first-child {
+    border: solid black 2px;
+  }
+  li:nth-child(2) {
+    border: solid black 2px;
+  }
+  li:nth-child(3) {
+    border: solid black 2px;
+  }
+    background-color: #2f3640;
+    border-radius :15px;
+
+`
+const Box2= styled.div`
+    padding: 0px 20px;
+    max-width:480px;
+    margin: 30px auto;
+`
+const Box3= styled.div`
+    padding: 20px 20px;
+    max-width:1280px;
+    font-size: 1.3rem;
+    margin: 0 auto;
+    display: flex;
+    ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Corrected alignment */
+    width:100%
+    };
+    li {
+      width:100px;
+      margin-right: 20px; /* Adjust as needed for spacing */
+    };
+
+    li:first-child {
+    border: solid black 2px;
+    //margin-right: 150px; /* Adjust as needed for spacing */
+  }
+  li:nth-child(2) {
+    border: solid black 2px;
+  }
+    background-color: #2f3640;
+    border-radius :15px;
+
+`
+
+const Desc = styled.div`
+    padding: 0px 20px;
+    max-width:480px;
+    margin: 0 auto;
+    font-size:1.2rem;
+`
 
 interface RouteState {
   name:string;
@@ -100,6 +182,8 @@ function Coin() {
   const {state} = useLocation<RouteState>();
  useEffect(()=>{
   (async()=>{
+    //error handling 
+    //race-condition 
     const info= await(
       await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)).json()
     setInfo(info)
@@ -107,12 +191,11 @@ function Coin() {
         await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)).json()
     setPrice(price)    
     setLoading(false)  
-    console.log(info)
-    console.log(price)
+  
 
   })()
 
- },[])
+ },[coinId])
 
 
   return(
@@ -120,7 +203,24 @@ function Coin() {
     <Header>
         <Title> {state?.name || "Loading.."}</Title>
     </Header>    
-    {loading? <Loading> Loading the Coin Data ... </Loading>: price?.name}
+    {loading? <Loading> Loading the Coin Data ... </Loading>: 
+    <CoinDetail>
+        <Box1>
+          <ul>
+            <li> Rank :  {info?.rank}</li> 
+            <li> Symbol : {info?.symbol}</li> 
+            <li> Open Source : {info?.open_source?"Yes" :"No"}</li>
+          </ul>
+        </Box1>
+        <Box2> <Desc> {info?.description}</Desc></Box2>
+        <Box3>
+        <ul>
+            <li> Total Supply :   {price?.total_supply}</li> 
+            
+            <li> Max Supply : {price?.max_supply} </li>
+          </ul>
+        </Box3>
+       </CoinDetail>}
     </Container>
   )
 }

@@ -54,3 +54,10 @@ https://styled-components.com/docs/api#typescript
 2. theme.ts 
 
 when do we use ts and tsx?
+
+
+-React 
+https://reactjs.org/docs/events.html
+
+
+SyntheticEvent :  event wrapper ,basically event for React
