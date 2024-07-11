@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams,Switch, Route} from "react-router";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
+import Price from "./Price";
+import Chart from "./Chart";
 
 interface RouteParams {
   coinId: string;
@@ -59,13 +61,13 @@ const Box1= styled.div`
     };
 
     li:first-child {
-    border: solid black 2px;
+    //border: solid black 2px;
   }
   li:nth-child(2) {
-    border: solid black 2px;
+    //border: solid black 2px;
   }
   li:nth-child(3) {
-    border: solid black 2px;
+    //border: solid black 2px;
   }
     background-color: #2f3640;
     border-radius :15px;
@@ -97,11 +99,11 @@ const Box3= styled.div`
     };
 
     li:first-child {
-    border: solid black 2px;
+    //border: solid black 2px;
     //margin-right: 150px; /* Adjust as needed for spacing */
   }
   li:nth-child(2) {
-    border: solid black 2px;
+    //border: solid black 2px;
   }
     background-color: #2f3640;
     border-radius :15px;
@@ -196,12 +198,14 @@ function Coin() {
   })()
 
  },[coinId])
+ //this is best practice put the depdence variable here  
+ //we know coinId never change it gets from its parent
 
 
   return(
     <Container>
     <Header>
-        <Title> {state?.name || "Loading.."}</Title>
+        <Title> {state?.name ? state.name : loading? "Loading...":info?.name}</Title>
     </Header>    
     {loading? <Loading> Loading the Coin Data ... </Loading>: 
     <CoinDetail>
@@ -221,6 +225,15 @@ function Coin() {
           </ul>
         </Box3>
        </CoinDetail>}
+    
+       <Switch>
+        <Route path="/btc-bitocin/price">
+          <Price />
+        </Route>
+        <Route path="/btc-bitocin/chart">
+          <Chart/>
+        </Route>
+       </Switch>
     </Container>
   )
 }
