@@ -2,13 +2,13 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Coin from "./routes/Coin";
 import Coins from "./routes/Coins";
 
-function Router() {
+function Router({ toggleTheme }) {
   return (
     <BrowserRouter>
       <Switch>
         {/* //this is how you tell there is parameter */}
         <Route path="/:coinId">
-          <Coin />
+          <Coin toggleTheme={toggleTheme} />
         </Route>
         <Route path="/">
           <Coins />
@@ -17,4 +17,5 @@ function Router() {
     </BrowserRouter>
   );
 }
+
 export default Router;

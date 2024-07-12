@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams,Switch, Route} from "react-router";
-import { Link, useLocation,useRouteMatch } from "react-router-dom";
+import { Link, useHistory, useLocation,useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
 import Price from "./Price";
 import Chart from "./Chart";
+import { useQuery } from "react-query";
+import { fetchCoinInfo, fetchPriceData } from "../apit";
+
+
 
 interface RouteParams {
   coinId: string;
@@ -41,38 +45,27 @@ const CoinDetail= styled.div`
     
 `
 
-const Box1= styled.div`
-    padding: 20px 20px;
-    max-width:1280px;
-    font-size: 1.3rem;
-    margin: 0 auto;
-    display: flex;
-    ul {
+
+const Box1 = styled.div`
+  padding: 20px 20px;
+  max-width: 1280px;
+  font-size: 1.3rem;
+  margin: 0 auto;
+  display: flex;
+  ul {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
     justify-content: space-between;
-    
-    };
-    li {
-      width:100px;
-      margin-right: 20px; /* Adjust as needed for spacing */
-    };
-
-    li:first-child {
-    //border: solid black 2px;
   }
-  li:nth-child(2) {
-    //border: solid black 2px;
+  li {
+    width: 100px;
+    margin-right: 20px; /* Adjust as needed for spacing */
   }
-  li:nth-child(3) {
-    //border: solid black 2px;
-  }
-    background-color: #2f3640;
-    border-radius :15px;
-
-`
+  background-color: ${(props) => props.theme.componentBgColor}; // Use theme property
+  border-radius: 15px;
+`;
 const Box2= styled.div`
     padding: 0px 20px;
     max-width:480px;
@@ -105,7 +98,7 @@ const Box3= styled.div`
   li:nth-child(2) {
     //border: solid black 2px;
   }
-    background-color: #2f3640;
+  background-color: ${(props) => props.theme.componentBgColor}; // Use theme property
     border-radius :15px;
 
 `
@@ -128,12 +121,21 @@ const Tabs = styled.div`
   gap: 10px;
 `;
 
+
+
+const BtnContainer = styled.div`
+  position: absolute;
+  top: 20px;
+  right: 300px;
+  display: flex;
+`;
+
 const Tab = styled.span<{ isActive: boolean }>`
   text-align: center;
   text-transform: uppercase;
   font-size: 12px;
   font-weight: 400;
-  background-color: #2f3640;
+  background-color: ${(props) => props.theme.componentBgColor}; // Use theme property
   padding: 7px 0px;
   border-radius: 10px;
   color: ${(props) =>
@@ -143,6 +145,31 @@ const Tab = styled.span<{ isActive: boolean }>`
   }
 `;
 
+const BackBtn = styled.button`
+  width: 60px;
+  height: 40px;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 400;
+  background-color: ${(props) => props.theme.componentBgColor}; // Use theme property
+  padding: 7px 0px;
+  border-radius: 10px;
+  color: ${(props) => props.theme.textColor};
+`;
+
+const ThemeBtn = styled.button`
+  width: 60px;
+  height: 40px;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 400;
+  background-color: ${(props) => props.theme.componentBgColor}; // Use theme property
+  padding: 7px 0px;
+  border-radius: 10px;
+  color: ${(props) => props.theme.textColor};
+`;
 
 interface InfoData {
   id: string;
@@ -199,54 +226,68 @@ interface PriceData {
 }
 
 
-function Coin() {
-  const [loading, setLoading]= useState(true);
-  const [info, setInfo]= useState<InfoData>();
-  const [price, setPrice]= useState<PriceData>();
-  const { coinId } = useParams<RouteParams>();
-  const {state} = useLocation<RouteState>();
-  const priceMatch = useRouteMatch("/:coinId/price")
-  const chartMatch = useRouteMatch("/:coindId/chart")
- useEffect(()=>{
-  (async()=>{
-    //error handling 
-    //race-condition 
-    const info= await(
-      await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)).json()
-    setInfo(info)
-    const price= await(
-        await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)).json()
-    setPrice(price)    
-    setLoading(false)  
+function Coin({toggleTheme}) {
+//   const [loading, setLoading]= useState(true);
+//   const [info, setInfo]= useState<InfoData>();
+//   const [price, setPrice]= useState<PriceData>();
+   const { coinId } = useParams<RouteParams>();
+   const {state} = useLocation<RouteState>();
+   const history = useHistory();
+   /*
+The useLocation hook from react-router-dom provides the current URL details. 
+The state property lets you pass data to a new route,
+ similar to query parameters. This data can be any JavaScript object.*/
+   const priceMatch = useRouteMatch("/:coinId/price")
+   const chartMatch = useRouteMatch("/:coindId/chart")
+//  useEffect(()=>{
+//   (async()=>{
+//     //error handling 
+//     //race-condition 
+//     const info= await(
+//       await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)).json()
+//     setInfo(info)
+//     const price= await(
+//         await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)).json()
+//     setPrice(price)    
+//     setLoading(false)  
   
 
-  })()
+//   })()
 
- },[coinId])
+//  },[coinId])
+
+const {isLoading: infoLoading,data:infoData}=useQuery<InfoData>(["info",coinId], ()=> fetchCoinInfo(coinId))
+const {isLoading:priceLoading,data:priceData}=useQuery<PriceData>(["price",coinId], ()=> fetchPriceData(coinId))
  //this is best practice put the depdence variable here  
  //we know coinId never change it gets from its parent
-
-
+ const loading= infoLoading || priceLoading
+ const handleBackClick = () => {
+  history.push("/");
+};
   return(
     <Container>
     <Header>
-        <Title> {state?.name ? state.name : loading? "Loading...":info?.name}</Title>
+        <Title> {state?.name ? state.name : loading? "Loading...":infoData?.name}</Title>
+        <BtnContainer>
+        <BackBtn onClick={handleBackClick}>HOME</BackBtn>
+        <ThemeBtn onClick={toggleTheme}>THEME</ThemeBtn>
+        </BtnContainer>
     </Header>    
     {loading? <Loading> Loading the Coin Data ... </Loading>: 
     <CoinDetail>
         <Box1>
           <ul>
-            <li> Rank :  {info?.rank}</li> 
-            <li> Symbol : {info?.symbol}</li> 
-            <li> Open Source : {info?.open_source?"Yes" :"No"}</li>
+            <li> Rank :  {infoData?.rank}</li> 
+            <li> Symbol : {infoData?.symbol}</li> 
+            <li> Open Source : {infoData?.open_source?"Yes" :"No"}</li>
           </ul>
         </Box1>
-        <Box2> <Desc> {info?.description}</Desc></Box2>
+        <Box2> <Desc> {infoData?.description}</Desc></Box2>
         <Box3>
         <ul>
-            <li> Total Supply :   {price?.total_supply}</li> 
+            <li> Total Supply :   {priceData?.total_supply}</li> 
             
-            <li> Max Supply : {price?.max_supply} </li>
+            <li> Max Supply : {priceData?.max_supply} </li>
           </ul>
         </Box3>
        </CoinDetail>}
@@ -259,17 +300,13 @@ function Coin() {
               <Link to={`/${coinId}/price`}>Price</Link>
             </Tab>
           </Tabs>
-       
-
-       
-
        <Switch>
        <Route path={`/:coinId/price`}>
-          <Price />
+          <Price coinId={coinId}/>
         </Route>
         <Route path={`/${coinId}/chart`}>
 
-          <Chart/>
+          <Chart coinId={coinId}/>
         </Route>
        </Switch>
     </Container>

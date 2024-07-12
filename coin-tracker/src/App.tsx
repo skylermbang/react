@@ -1,5 +1,23 @@
 import { createGlobalStyle } from "styled-components";
 import Router from "./Router";
+import { darkTheme, lightTheme } from "./theme";
+import { ThemeProvider } from "styled-components";
+import { ReactQueryDevtools } from 'react-query/devtools';
+import { useState } from "react";
+import styled from "styled-components";
+
+const ThemeBtn = styled.button`
+  width: 60px;
+  height: 40px;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 400;
+  background-color: #2f3640;
+  padding: 7px 0px;
+  border-radius: 10px;
+  color: ${(props) => props.theme.textColor};
+`;
 
 const GlobalStyle = createGlobalStyle`
 html, body, div, span, applet, object, iframe,
@@ -61,13 +79,19 @@ a {
 }
 `;
 
-
 function App() {
+  const [isDarkTheme, setIsDarkTheme] = useState(true);
+
+  const toggleTheme = () => {
+    setIsDarkTheme((prevTheme) => !prevTheme);
+  };
+
   return (
-    <>
+    <ThemeProvider theme={isDarkTheme ? darkTheme : lightTheme}>
       <GlobalStyle />
-      <Router />
-    </>
+      <Router toggleTheme={toggleTheme} />
+      <ReactQueryDevtools initialIsOpen={true} />
+    </ThemeProvider>
   );
 }
 
