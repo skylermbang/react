@@ -2,6 +2,7 @@ import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { fetchChartData } from "../apit";
 import ReactApexChart from "react-apexcharts";
+import { ApexOptions } from "apexcharts"; // Import ApexOptions for typing
 
 interface ChartProps {
   coinId: string;
@@ -26,39 +27,38 @@ function Chart({ coinId }: ChartProps) {
     y: [parseFloat(point.open), parseFloat(point.high), parseFloat(point.low), parseFloat(point.close)],
   }));
 
-  const options = {
+  const options: ApexOptions = {
     chart: {
       height: 500,
       type: "candlestick",
     },
     xaxis: {
-        type: "datetime",
-        labels: {
-          show: true,
-          datetimeUTC: false,
-        },
+      type: "datetime",
+      labels: {
+        show: true,
+        datetimeUTC: false,
       },
-      yaxis: {
-        labels: {
-          show: true,
-          formatter: (value: number) => value.toFixed(2), // Format y-axis labels to two decimal places
-        },
+    },
+    yaxis: {
+      labels: {
+        show: true,
+        formatter: (value: number) => value.toFixed(2),
       },
+    },
     tooltip: {
-      enabled: false, // Enable tooltips
+      enabled: false,
       y: {
-        formatter: (value: number) => `$${value.toFixed(2)}`, // Format tooltip values as dollar values
+        formatter: (value: number) => `$${value.toFixed(2)}`,
       },
     },
   };
-
 
   return (
     <div>
       {isLoading ? "Loading Chart..." : (
         <ReactApexChart
           type="candlestick"
-          series={[{ data: chartData }]}
+          series={[{ data: chartData ?? [] }]}
           options={options}
           height={500}
         />

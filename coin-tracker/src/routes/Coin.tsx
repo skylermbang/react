@@ -224,9 +224,11 @@ interface PriceData {
     };
   };
 }
+interface CoinProps {
+  toggleTheme: () => void;
+}
 
-
-function Coin({toggleTheme}) {
+const Coin: React.FC<CoinProps> = ({ toggleTheme }) => {
 //   const [loading, setLoading]= useState(true);
 //   const [info, setInfo]= useState<InfoData>();
 //   const [price, setPrice]= useState<PriceData>();
