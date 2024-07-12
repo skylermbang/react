@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams,Switch, Route} from "react-router";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation,useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
 import Price from "./Price";
 import Chart from "./Chart";
@@ -121,6 +121,29 @@ interface RouteState {
   name:string;
 }
 
+const Tabs = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 25px 0px;
+  gap: 10px;
+`;
+
+const Tab = styled.span<{ isActive: boolean }>`
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 400;
+  background-color: #2f3640;
+  padding: 7px 0px;
+  border-radius: 10px;
+  color: ${(props) =>
+    props.isActive ? props.theme.accentColor : props.theme.textColor};
+  a {
+    display: block;
+  }
+`;
+
+
 interface InfoData {
   id: string;
   name: string;
@@ -182,6 +205,8 @@ function Coin() {
   const [price, setPrice]= useState<PriceData>();
   const { coinId } = useParams<RouteParams>();
   const {state} = useLocation<RouteState>();
+  const priceMatch = useRouteMatch("/:coinId/price")
+  const chartMatch = useRouteMatch("/:coindId/chart")
  useEffect(()=>{
   (async()=>{
     //error handling 
@@ -225,12 +250,25 @@ function Coin() {
           </ul>
         </Box3>
        </CoinDetail>}
-    
+      
+       <Tabs>
+            <Tab isActive={chartMatch !== null}>
+              <Link to={`/${coinId}/chart`}>Chart</Link>
+            </Tab>
+            <Tab isActive={priceMatch !== null}>
+              <Link to={`/${coinId}/price`}>Price</Link>
+            </Tab>
+          </Tabs>
+       
+
+       
+
        <Switch>
-        <Route path="/btc-bitocin/price">
+       <Route path={`/:coinId/price`}>
           <Price />
         </Route>
-        <Route path="/btc-bitocin/chart">
+        <Route path={`/${coinId}/chart`}>
+
           <Chart/>
         </Route>
        </Switch>

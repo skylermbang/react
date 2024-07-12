@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components"
+import { fetchCoins2 } from "../apit";
+import { useQuery } from "react-query";
 
 const Title = styled.h1`
     color:${props=>props.theme.accentColor};
@@ -69,25 +71,29 @@ const Img = styled.img`
 
 
 function Coins(){
-    const [coins, setCoins]= useState<CoinInterface[]>([]);
-    const [loading, setLoading]= useState(true);
-    useEffect(()=>{
-        (async()=>{
-         const response= await fetch("https://api.coinpaprika.com/v1/coins")
-         const json= await response.json()
-         //axios will return in json but fetch will have to convert to json
-         setCoins(json.slice(0,99))
-         setLoading(false)
-        })();
-    }   ,[])
+    //this can be removed and just use the react -query 
+    // const [coins, setCoins]= useState<CoinInterface[]>([]);
+    // const [loading, setLoading]= useState(true);
+    // useEffect(()=>{
+    //     (async()=>{
+    //      const response= await fetch("https://api.coinpaprika.com/v1/coins")
+    //      const json= await response.json()
+    //      //axios will return in json but fetch will have to convert to json
+    //      setCoins(json.slice(0,99))
+    //      setLoading(false)
+    //     })();
+    // }   ,[])
+
+    const {isLoading,data}=useQuery<CoinInterface[]>("allCoins",fetchCoins2)
+
 
     return (
         <Container>
             <Header>
                 <Title>  Coin </Title>
             </Header>    
-            {loading? <Loading> Loading the Coin Data ... </Loading>: <CoinsList>
-                {coins.map((coin)=>(
+            {isLoading? <Loading> Loading the Coin Data ... </Loading>: <CoinsList>
+                {data?.slice(0,99).map((coin)=>(
                       <Coin key={coin.id}> 
                         <Link to={{
                             pathname:`/${coin.id}`,
