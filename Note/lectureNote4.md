@@ -7,3 +7,5 @@ why react-query?
 //nested router
 //inside one screen mnay diffrent router
 // /btx/infomration and /btc/graph?
+
+
