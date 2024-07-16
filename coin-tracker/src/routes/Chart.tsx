@@ -1,8 +1,9 @@
 import { useQuery } from "react-query";
-import { useParams } from "react-router-dom";
 import { fetchChartData } from "../apit";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts"; // Import ApexOptions for typing
+import { useRecoilValue } from "recoil";
+import { isDarkAtom } from "../atoms";
 
 interface ChartProps {
   coinId: string;
@@ -20,6 +21,8 @@ interface IHistrocial {
 }
 
 function Chart({ coinId }: ChartProps) {
+  const isDark =useRecoilValue(isDarkAtom)
+
   const { isLoading, data } = useQuery<IHistrocial[]>(["ohlcv", coinId], () => fetchChartData(coinId));
 
   const chartData = data?.map((point) => ({
@@ -32,6 +35,10 @@ function Chart({ coinId }: ChartProps) {
       height: 500,
       type: "candlestick",
     },
+    theme:{
+      mode: isDark ? "dark":"light"
+    },
+    
     xaxis: {
       type: "datetime",
       labels: {
