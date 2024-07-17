@@ -18,3 +18,26 @@ but thesedays most of company people just use requct-query to deal with global s
 react hook form 
 will let you do all the validation , onSubmit and all the extra stuff with few 
 hook.
+
+
+
+Recoil -
+
+1. you have to have atom
+import { atom } from "recoil";
+export const isDarkAtom = atom({
+  key: "isDark",
+  default: true,
+});
+
+
+2. index should have 
+    <RecoilRoot>
+
+
+3.  const isDark = useRecoilValue(isDarkAtom);
+to use the atom
+
+
+4. useSetRecoilState(isDarkAtom)
+this will get functino 
